@@ -25,7 +25,7 @@ items_in_scope:
 - Environment
 feature_flags:
 - enable_lakehouse_unpublish
-catalog_docs_uri: https://catalog.fabric.microsoft.com/catalog/stateful-streaming-lakehouse/
+catalog_docs_uri: https://dcnsakthi.github.io/msfabric-solution-catalog/catalog/stateful-streaming-lakehouse/
 entry_point: explore_streaming.Notebook
 test_suite: ''
 owner_email: Fabriccatalog.StatefulStreamingLakehouse@microsoft.com

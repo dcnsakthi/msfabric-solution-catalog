@@ -30,7 +30,7 @@ items_in_scope:
   - Reflex
   - DataAgent
   - Lakehouse
-catalog_docs_uri: https://catalog.fabric.microsoft.com/catalog/grid-intelligence
+catalog_docs_uri: https://dcnsakthi.github.io/msfabric-solution-catalog/catalog/grid-intelligence
 entry_point: PostDeploymentConfig.Notebook
 test_suite: ""
 owner_email: fabriccatalog.collab@microsoft.com

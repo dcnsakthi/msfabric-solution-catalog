@@ -6,7 +6,7 @@
     <br />
     <a href="https://pypi.org/project/msfabric-solution-catalog/">PyPI Package</a>
     ·
-    <a href="https://catalog.fabric.microsoft.com">Browse catalogs</a>
+    <a href="https://dcnsakthi.github.io/msfabric-solution-catalog/catalog">Browse catalogs</a>
     ·
     <a href="CONTRIBUTING.md">Contributing</a>
   </p>
@@ -21,7 +21,7 @@ A **catalog** is a curated, tested Microsoft Fabric solution — data, notebooks
 | Project                                               | Description                                                                                                                                               |
 | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [**msfabric-solution-catalog**](src/msfabric_solution_catalog/)         | Core Python library — discover, install, and manage catalogs in your Fabric workspace. Published to [PyPI](https://pypi.org/project/msfabric-solution-catalog/). |
-| [**msfabric-solution-catalog-web**](src/msfabric_solution_catalog_web/) | Website for browsing catalogs — hosted at [catalog.fabric.microsoft.com](https://catalog.fabric.microsoft.com).                                     |
+| [**msfabric-solution-catalog-web**](src/msfabric_solution_catalog_web/) | Website for browsing catalogs — hosted at [msfabric-solution-catalog | msfabric-solution-catalog catalog](https://dcnsakthi.github.io/msfabric-solution-catalog/catalog).                                     |
 
 ## Quick Start
 
@@ -47,7 +47,7 @@ Please follow the contribution process in [CONTRIBUTING.md](CONTRIBUTING.md) and
 
 ## Learn More
 
-- **Browse catalogs**: https://catalog.fabric.microsoft.com
+- **Browse catalogs**: https://dcnsakthi.github.io/msfabric-solution-catalog/catalog
 - **PyPI**: https://pypi.org/project/msfabric-solution-catalog/
 - **fabric-cicd**: https://microsoft.github.io/fabric-cicd/latest/
 

@@ -20,7 +20,7 @@ items_in_scope:
 - Notebook
 - Lakehouse
 - Eventstream
-catalog_docs_uri: https://catalog.fabric.microsoft.com/catalog/stateful-streaming-rocksdb
+catalog_docs_uri: https://dcnsakthi.github.io/msfabric-solution-catalog/catalog/stateful-streaming-rocksdb
 entry_point: heartbeat_notebook.Notebook
 test_suite: ''
 owner_email: mdrrahman@microsoft.com

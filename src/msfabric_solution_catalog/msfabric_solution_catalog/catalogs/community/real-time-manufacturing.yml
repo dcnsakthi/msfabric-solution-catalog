@@ -33,7 +33,7 @@ items_in_scope:
   - DataAgent
   - Lakehouse
   - DataPipeline
-catalog_docs_uri: https://catalog.fabric.microsoft.com/catalog/real-time-manufacturing
+catalog_docs_uri: https://dcnsakthi.github.io/msfabric-solution-catalog/catalog/real-time-manufacturing
 entry_point: PostDeploymentNotebook.Notebook
 test_suite: ""
 owner_email: andreas.rederer@microsoft.com
