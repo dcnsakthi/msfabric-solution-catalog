@@ -356,39 +356,35 @@ const Header: React.FC = () => {
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 200 60"
-                  width="120"
-                  height="32"
+                  viewBox="0 0 220 48"
+                  width="150"
+                  height="36"
                   style={{ objectFit: 'contain' }}
-                  aria-label="MS Fabric Solution Catalog"
+                  aria-label="Microsoft Fabric Solution Catalog"
                 >
-                  {/* Logo Cube (simplified Microsoft Fabric style) */}
-                  <g>
-                    {/* Blue cube */}
-                    <rect x="15" y="12" width="15" height="15" fill="#0078D4" />
-                    {/* Cyan */}
-                    <rect x="33" y="12" width="15" height="15" fill="#50E6FF" />
-                    {/* Orange */}
-                    <rect x="15" y="30" width="15" height="15" fill="#FFB900" />
-                    {/* Red */}
-                    <rect x="33" y="30" width="15" height="15" fill="#E74C3C" />
+                  {/* Microsoft Fabric green logo mark */}
+                  <g transform="translate(0, 4)">
+                    {/* Fabric "F" folded ribbon shape */}
+                    <path d="M10 2 C10 2 22 2 26 8 C30 14 24 20 20 24 C16 28 10 32 10 32 L10 38 C10 38 20 34 26 28 C32 22 34 14 30 6 C26 -2 16 0 10 0 Z" fill="#00B294" />
+                    <path d="M20 2 C20 2 28 4 30 10 C32 16 28 22 24 26 C20 30 16 34 14 38 L20 38 C20 38 26 32 30 26 C34 20 36 12 32 6 C28 0 22 0 20 0 Z" fill="#40D9B8" opacity="0.7" />
                   </g>
-                  {/* Text: MS Fabric Solution Catalog */}
+                  {/* Text: Microsoft Fabric */}
                   <text
-                    x="60"
-                    y="28"
+                    x="44"
+                    y="22"
                     fontFamily="Segoe UI, Arial, sans-serif"
-                    fontSize="14"
+                    fontSize="13"
                     fontWeight="700"
                     fill="#000000"
                   >
-                    MS Fabric
+                    Microsoft Fabric
                   </text>
+                  {/* Text: Solution Catalog */}
                   <text
-                    x="60"
-                    y="45"
+                    x="44"
+                    y="38"
                     fontFamily="Segoe UI, Arial, sans-serif"
-                    fontSize="12"
+                    fontSize="11"
                     fontWeight="500"
                     fill="#666666"
                   >
