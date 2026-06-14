@@ -132,7 +132,7 @@ This reads the `mermaid_diagram` field from every catalog YAML and writes SVGs t
 Use the built-in web page — no extra dependencies required:
 
 1. Start the dev server: `./src/msfabric_solution_catalog_web/start-dev-server.sh`
-2. Go to [`https://catalog.fabric.microsoft.com/tools/diagram-generator`](https://catalog.fabric.microsoft.com/tools/diagram-generator)
+2. Go to [`https://dcnsakthi.github.io/msfabric-solution-catalog/tools/diagram-generator`](https://dcnsakthi.github.io/msfabric-solution-catalog/tools/diagram-generator)
 3. Paste the Mermaid syntax from the catalog's `mermaid_diagram` YAML field
 4. Enter the catalog's `logical_id` so that the files are downloaded with the right name
 5. Click **Download Light + Dark SVGs**

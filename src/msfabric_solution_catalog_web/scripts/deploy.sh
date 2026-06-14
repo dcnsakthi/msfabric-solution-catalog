@@ -17,7 +17,7 @@ az storage blob upload-batch -d '$web' -s "${GIT_ROOT}/src/msfabric_solution_cat
 echo "Deployment complete - the site will be live at"
 echo
 echo "- https://catalogfabric.z9.web.core.windows.net : Right now"
-echo "- https://catalog.fabric.microsoft.com          : After DNS cache propagation (< 40 minutes for Azure CDN)"
+echo "- https://dcnsakthi.github.io/msfabric-solution-catalog          : After DNS cache propagation (GitHub Pages)"
 echo
 
 

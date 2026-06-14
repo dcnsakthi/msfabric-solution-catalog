@@ -21,6 +21,7 @@ import GithubRegular from '@images/github-regular.svg';
 import GithubLightRegular from '@images/github-light-regular.svg';
 import PythonLogoDark from '@images/python-logo-dark.svg';
 import PythonLogoLight from '@images/python-logo-light.svg';
+import CatalogLogo from '@images/MSFabricSolutionCatalog.svg';
 import scenariosData from '@data/scenarios.json';
 import type { ScenarioCard } from '@scenario/scenario';
 import { device } from '@styles/breakpoint';
@@ -345,32 +346,19 @@ const Header: React.FC = () => {
     <div className={styles.headerTopbarWrapper}>
       <header ref={ref} className={styles.header}>
         <div className={styles.headerContainer}>
-          {/* Leading: Microsoft logo | Fabric catalog | Scenarios */}
+          {/* Leading: Fabric catalog logo | Scenarios */}
           <div className={styles.leadingButtons}>
             <div className={styles.logoContainer}>
-              <Button
-                className={styles.microsoftButton}
-                onClick={() =>
-                  window.open(EXTERNAL_URL.MICROSOFT, '_blank')
-                }
-              >
-                <Icon
-                  alt="Microsoft logo"
-                  darkThemeIcon={MSLogoRegular}
-                  lightThemeIcon={MSLogoLightRegular}
-                />
-              </Button>
-              <Divider vertical />
               <Button
                 className={styles.catalogButton}
                 onClick={() =>
                   router.push(INTERNAL_ROUTE.OVERVIEW)
                 }
               >
-                <Typography
-                  text="Fabric catalog"
-                  type="custom"
-                  className={styles.catalogText}
+                <Icon
+                  alt="MS Fabric Solution Catalog logo"
+                  darkThemeIcon={CatalogLogo}
+                  lightThemeIcon={CatalogLogo}
                 />
               </Button>
             </div>
