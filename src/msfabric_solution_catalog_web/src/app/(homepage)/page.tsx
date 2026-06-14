@@ -35,7 +35,7 @@ export default function Home() {
           left={{
             label: t('banner.buttonText.left.label'),
             as: 'a',
-            href: INTERNAL_ROUTE.SCENARIOS,
+            href: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${INTERNAL_ROUTE.SCENARIOS}`,
           }}
         />
       </HeroBanner>
