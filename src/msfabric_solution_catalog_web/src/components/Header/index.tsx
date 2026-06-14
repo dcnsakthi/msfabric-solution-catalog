@@ -21,7 +21,6 @@ import GithubRegular from '@images/github-regular.svg';
 import GithubLightRegular from '@images/github-light-regular.svg';
 import PythonLogoDark from '@images/python-logo-dark.svg';
 import PythonLogoLight from '@images/python-logo-light.svg';
-import CatalogLogo from '@images/MSFabricSolutionCatalog.svg';
 import scenariosData from '@data/scenarios.json';
 import type { ScenarioCard } from '@scenario/scenario';
 import { device } from '@styles/breakpoint';
@@ -355,11 +354,47 @@ const Header: React.FC = () => {
                   router.push(INTERNAL_ROUTE.OVERVIEW)
                 }
               >
-                <Icon
-                  alt="MS Fabric Solution Catalog logo"
-                  darkThemeIcon={CatalogLogo}
-                  lightThemeIcon={CatalogLogo}
-                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 200 60"
+                  width="120"
+                  height="32"
+                  style={{ objectFit: 'contain' }}
+                  aria-label="MS Fabric Solution Catalog"
+                >
+                  {/* Logo Cube (simplified Microsoft Fabric style) */}
+                  <g>
+                    {/* Blue cube */}
+                    <rect x="15" y="12" width="15" height="15" fill="#0078D4" />
+                    {/* Cyan */}
+                    <rect x="33" y="12" width="15" height="15" fill="#50E6FF" />
+                    {/* Orange */}
+                    <rect x="15" y="30" width="15" height="15" fill="#FFB900" />
+                    {/* Red */}
+                    <rect x="33" y="30" width="15" height="15" fill="#E74C3C" />
+                  </g>
+                  {/* Text: MS Fabric Solution Catalog */}
+                  <text
+                    x="60"
+                    y="28"
+                    fontFamily="Segoe UI, Arial, sans-serif"
+                    fontSize="14"
+                    fontWeight="700"
+                    fill="#000000"
+                  >
+                    MS Fabric
+                  </text>
+                  <text
+                    x="60"
+                    y="45"
+                    fontFamily="Segoe UI, Arial, sans-serif"
+                    fontSize="12"
+                    fontWeight="500"
+                    fill="#666666"
+                  >
+                    Solution Catalog
+                  </text>
+                </svg>
               </Button>
             </div>
             <Button
