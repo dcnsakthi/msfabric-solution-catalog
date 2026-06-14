@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/microsoft/msfabric-solution-catalog/raw/main/src/msfabric_solution_catalog_web/public/dark-logo-right.svg" alt="Arc catalog logo" width="520">
+  <img src="https://github.com/dcnsakthi/msfabric-solution-catalog/raw/main/src/msfabric_solution_catalog_web/public/MSFabricSolutionCatalog.svg" alt="Microsoft Fabric Solution Catalog logo" width="300">
 </p>
 
 <p align="center">
