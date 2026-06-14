@@ -14,7 +14,7 @@ export default function DiagramExpandedModal({ slug, title, onClose }: Props) {
   const { theme } = useThemeContext();
   const isDark = theme.key === 'dark';
 
-  const diagramSrc = `/images/diagrams/${slug}_${isDark ? 'dark' : 'light'}.svg`;
+  const diagramSrc = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/images/diagrams/${slug}_${isDark ? 'dark' : 'light'}.svg`;
 
   const panelBg = isDark ? '#1a1a20' : '#f8fafd';
   const titleBarBg = isDark ? 'rgba(0,0,0,0.35)' : 'rgba(0,0,0,0.06)';

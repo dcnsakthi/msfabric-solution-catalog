@@ -71,7 +71,8 @@ function CardHeader({
   const isNew = scenario.isNew;
   const [imgLoaded, setImgLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
-  const src = `/images/diagrams/${scenario.slug}_${isDark ? 'dark' : 'light'}.svg`;
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+  const src = `${basePath}/images/diagrams/${scenario.slug}_${isDark ? 'dark' : 'light'}.svg`;
 
   // Handle cached images whose load event fires before React attaches onLoad
   useEffect(() => {

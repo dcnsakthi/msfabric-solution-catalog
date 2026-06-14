@@ -46,7 +46,7 @@ function ScenarioHeader({
     >
       {/* Invisible in-flow image to size the container for tall diagrams */}
       <img
-        src={`/images/diagrams/${scenario.slug}_${isDark ? 'dark' : 'light'}.svg`}
+        src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/images/diagrams/${scenario.slug}_${isDark ? 'dark' : 'light'}.svg`}
         alt=""
         aria-hidden
         style={{ display: 'block', width: '100%', maxHeight: '500px', visibility: 'hidden', padding: '6px' }}
@@ -70,7 +70,7 @@ function ScenarioHeader({
       >
         <div style={{ width: '100%', height: '100%', pointerEvents: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4px' }}>
           <img
-            src={`/images/diagrams/${scenario.slug}_${isDark ? 'dark' : 'light'}.svg`}
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/images/diagrams/${scenario.slug}_${isDark ? 'dark' : 'light'}.svg`}
             alt="Architecture diagram"
             style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
           />

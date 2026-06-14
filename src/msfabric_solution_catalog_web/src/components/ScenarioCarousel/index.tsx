@@ -45,7 +45,7 @@ export default function ScenarioCarousel() {
       const img = new Image();
       img.onload = done;
       img.onerror = done;
-      img.src = `/images/diagrams/${s.slug}_${suffix}.svg`;
+      img.src = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}/images/diagrams/${s.slug}_${suffix}.svg`;
     });
     return () => clearTimeout(timeout);
   }, [scenarios, isDark]);
