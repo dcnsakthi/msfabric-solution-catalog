@@ -1,0 +1,91 @@
+name: "New catalog"
+description: "Propose a new Fabric catalog package"
+title: "catalog: "
+labels: ["catalog", "Needs-Triage"]
+projects: ["microsoft/2147"]
+body:
+  - type: markdown
+    attributes:
+      value: "Please provide enough detail to scope, build, and review this catalog."
+  - type: input
+    id: title
+    attributes:
+      label: catalog title
+      description: Short, user-facing name
+      placeholder: "Contoso Real-Time Analytics"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: One- or two-sentence overview of the catalog
+      placeholder: "Accelerates ingestion, streaming, and dashboarding for logistics events."
+    validations:
+      required: true
+  - type: dropdown
+    id: solution_type
+    attributes:
+      label: Solution type
+      description: Select the catalog category
+      options:
+        - tutorial
+        - accelerator
+        - demo
+    validations:
+      required: true
+  - type: checkboxes
+    id: workloads
+    attributes:
+      label: Workloads involved
+      description: Select all applicable workloads
+      options:
+        - label: Data Engineering
+        - label: Data Warehouse
+        - label: Data Science
+        - label: Real Time Intelligence
+        - label: Data Factory
+        - label: SQL Database
+        - label: Power BI
+        - label: Other (describe below)
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: Detailed description
+      description: What this catalog does; key features and benefits
+      placeholder: "This catalog enables users to..."
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why this catalog is needed; target persona and scenario
+      placeholder: "This catalog helps data engineers learn how to..."
+    validations:
+      required: true
+  - type: textarea
+    id: audience
+    attributes:
+      label: Target audience
+      description: Who this catalog is intended for? This should delineate if the catalog is broadly applicable or targeted to a specific scenario, event, etc.
+      placeholder: "This catalog is designed for data engineers..."
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: Fabric items, libraries, data sources, external services
+      placeholder: "- Requires Workspace features X\n- Depends on library Y>=1.2\n- Needs demo storage account"
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct and Licensing
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/Azure/msfabric-solution-catalog/blob/main/CODE_OF_CONDUCT.md) and the project's [MIT license](https://github.com/microsoft/msfabric-solution-catalog/blob/main/LICENSE-CODE).
+      options:
+        - label: I agree to follow this project's Code of Conduct and Licensing terms.
+          required: true
+

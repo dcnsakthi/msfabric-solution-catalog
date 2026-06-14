@@ -1,0 +1,559 @@
+"""Core catalog class for listing and installing catalogs."""
+
+import logging
+import traceback
+from datetime import datetime, timedelta
+from typing import List, Optional
+
+from .installer import catalogInstaller
+from .logger import log_capture_context
+from .registry import catalogRegistry
+from .telemetry import track_install
+from .ui import ConflictUI, render_install_status_html, render_catalog_list
+
+logger = logging.getLogger(__name__)
+
+class catalog:
+    """Main catalog interface for discovering and installing catalogs."""
+    
+    def __init__(self):
+        """Initialize catalog with registry."""
+        self._registry_manager = catalogRegistry()
+        self._registry = self._registry_manager.load()
+
+    def _load_registry(self):
+        """Load catalog registry from YAML file (backward compatibility)."""
+        return self._registry_manager.load()
+
+    def _list(self):
+        """Display all available catalogs."""
+        print("Available catalogs:")
+        for j in self._registry:
+            if j.get('include_in_listing', True):
+                logical_id = j.get('logical_id', j.get('id', 'unknown'))
+                numeric_id = j.get('id', '?')
+                print(f"  • {logical_id} (#{numeric_id}): {j.get('name', 'Unknown')} - {j.get('description', 'No description')}")
+
+    def list(self, **kwargs):
+        """Display an interactive HTML UI of available catalogs."""
+        from IPython.display import HTML, display
+        
+        # Get the instance variable name dynamically
+        instance_name = self._get_instance_name()
+        
+        # Filter catalogs that should be listed
+        show_unlisted = kwargs.get("show_unlisted", False)
+        catalogs = [j for j in self._registry if j.get("include_in_listing", True) or show_unlisted]
+        
+        # Determine NEW threshold (60 days ago)
+        new_threshold = datetime.now() - timedelta(days=60)
+        
+        # Mark and sort catalogs
+        for j in catalogs:
+            try:
+                date_added = datetime.strptime(j['date_added'], "%m/%d/%Y")
+                j['is_new'] = date_added >= new_threshold
+            except (ValueError, KeyError):
+                j['is_new'] = False
+        
+        # Sort: NEW first, then numeric id, then logical_id for stability
+        catalogs.sort(key=lambda x: (not x['is_new'], x.get('id', 0), x.get('logical_id', '')))
+        
+        # Group by scenario, workload, and type
+        grouped_scenario = {}
+        grouped_workload = {}
+        grouped_type = {}
+        
+        for j in catalogs:
+            # Group by scenario
+            scenario_tags = j.get("scenario_tags", ["Uncategorized"])
+            for tag in scenario_tags:
+                if tag not in grouped_scenario:
+                    grouped_scenario[tag] = []
+                grouped_scenario[tag].append(j)
+            
+            # Group by primary workload (first tag only to avoid duplicates)
+            primary_workload = j.get("workload_tags", ["Uncategorized"])[0]
+            if primary_workload not in grouped_workload:
+                grouped_workload[primary_workload] = []
+            grouped_workload[primary_workload].append(j)
+
+            type_tag = j.get("type") or "Unspecified"
+            grouped_type.setdefault(type_tag, []).append(j)
+        
+        # Generate and display HTML
+        html = render_catalog_list(grouped_scenario, grouped_workload, grouped_type, instance_name)
+        display(HTML(html))
+    
+    def _get_instance_name(self):
+        """Get the variable name of this catalog instance."""
+        import inspect
+        import re
+        current = inspect.currentframe()
+        caller = current.f_back if current else None
+
+        # Prefer the user frame first (caller of the public API), then the immediate caller.
+        frames = []
+        if caller and caller.f_back:
+            frames.append(caller.f_back)
+        if caller:
+            frames.append(caller)
+
+        # Collect direct references to the instance and module aliases that expose it
+        instance_names = set()
+        module_aliases = set()
+        for frame in frames:
+            if not frame:
+                continue
+            for scope in [frame.f_locals, frame.f_globals]:
+                for var_name, var_value in scope.items():
+                    if var_name == "self":
+                        continue
+                    if var_value is self and not var_name.startswith('_'):
+                        instance_names.add(var_name)
+                    # Handle "import msfabric_solution_catalog as js" where js.catalog is the instance
+                    try:
+                        if inspect.ismodule(var_value) and getattr(var_value, "catalog", None) is self:
+                            module_aliases.add(var_name)
+                    except Exception:
+                        # Best-effort alias detection; ignore inspection issues
+                        pass
+
+        logger.debug(f"Found instance names: {instance_names}; module aliases: {module_aliases}")
+
+        # Parse the calling line to see which name was used (favor outer frames first)
+        try:
+            import linecache
+            for frame in frames:
+                if not frame or not frame.f_code:
+                    continue
+                call_line = frame.f_lineno
+                filename = frame.f_code.co_filename
+                line = linecache.getline(filename, call_line).strip()
+
+                logger.debug(f"Parsing line: {line}")
+
+                patterns = [
+                    r'(\w+)\.list\s*\(',
+                    r'(\w+)\._get_instance_name\s*\(',
+                    r'(\w+)\.install\s*\(',
+                    r'(\w+)\._install_from_github\s*\(',
+                ]
+
+                for pattern in patterns:
+                    match = re.search(pattern, line)
+                    if match:
+                        calling_var = match.group(1)
+                        logger.debug(f"Found calling variable: {calling_var}")
+                        if calling_var in instance_names or calling_var in module_aliases:
+                            logger.debug(f"Using matched variable name: {calling_var}")
+                            return calling_var
+
+        except Exception as e:
+            logger.debug(f"Error parsing calling line: {e}")
+
+        # Prefer explicit references, then module aliases, then default
+        if instance_names:
+            shortest = min(instance_names, key=len)
+            logger.debug(f"Using shortest instance name: {shortest}")
+            return shortest
+        if module_aliases:
+            shortest = min(module_aliases, key=len)
+            logger.debug(f"Using shortest module alias: {shortest}")
+            return shortest
+
+        logger.debug("No candidates found, using default 'catalog'")
+        return "catalog"
+
+    def _get_catalog_by_logical_id(self, catalog_id: str):
+        """Get catalog config by logical_id, with backward compatibility for old id lookups."""
+        return self._registry_manager.get_by_id(catalog_id)
+
+    def install(self, name: str, workspace_id: Optional[str] = None, **kwargs):
+        """
+        Install a catalog to a Fabric workspace.
+
+        Args:
+            name: Logical id of the catalog from registry
+            workspace_id: Target workspace GUID (optional)
+            **kwargs: Additional options (overrides registry defaults)
+                - unattended: If True, suppresses live HTML output and prints to console instead
+                - item_prefix: Custom prefix for created items, set as None for no prefix
+                - update_existing: If True, conflicting items will be updated
+                - auto_prefix_on_conflict: If True, auto-generate a prefix when conflicts are detected
+                - debug: If True, include all catalog logs (INFO+) in the rendered output; otherwise only fabric-cicd logs
+                - repo_ref: Override the registered source repo_ref (git tag/branch/commit) at runtime
+        """
+        config = self._get_catalog_by_logical_id(name)
+        if not config:
+            error_msg = f"Unknown catalog '{name}'. Use msfabric_solution_catalog.list() to list available catalogs."
+            raise ValueError(error_msg)
+        return self._install_with_config(config, workspace_id, **kwargs)
+
+    def _install_with_config(self, config: dict, workspace_id: Optional[str] = None, non_registered_install: bool = False, **kwargs):
+        """
+        Core install orchestration. Runs all installation phases for a given config dict.
+
+        Both `install()` (registry-based) and `_install_from_github()` (direct source)
+        call this method, guaranteeing identical behaviour regardless of how the config
+        was obtained.
+
+        Args:
+            config: Full catalog configuration dictionary (same shape as registry entries)
+            workspace_id: Target workspace GUID (optional)
+            non_registered_install: True when called via _install_from_github (not from registry)
+            **kwargs: Forwarded to catalogInstaller
+        """
+        logical_id = config.get('logical_id', '')
+        instance_name = self._get_instance_name()
+        installer = catalogInstaller(config, workspace_id, instance_name, **kwargs)
+        
+        # Setup state for rendering
+        unattended = installer.unattended
+        log_buffer = installer.log_buffer
+        live_handle = None
+        HTML_cls = None
+        live_rendering = False
+        conflict_already_rendered = False
+        _install_start_time = 0.0
+        _last_update_time = 0.0
+
+        def _update_live(status_label='installing', entry=None, err=None, extra_html=None):
+            """Update live display with current status."""
+            if not live_handle or HTML_cls is None:
+                return
+            import time
+            elapsed = time.monotonic() - _install_start_time if _install_start_time else 0.0
+            html = render_install_status_html(
+                status=status_label,
+                catalog_name=config.get('name', logical_id),
+                type=config.get('type', '').lower(),
+                workspace_id=installer.workspace_id,
+                entry_point=entry,
+                minutes_complete=config.get('minutes_to_complete_catalog'),
+                minutes_deploy=config.get('minutes_to_deploy'),
+                docs_uri=installer.effective_docs_uri,
+                logs=log_buffer,
+                error_message=err,
+                extra_html=extra_html,
+                elapsed_seconds=elapsed,
+            )
+            try:
+                live_handle.update(HTML_cls(html))
+            except Exception:
+                pass
+
+        # Initialize live rendering if not in unattended mode
+        import time as _time
+        _telemetry_start_time = _time.monotonic()
+        try:
+            if not unattended:
+                from IPython.display import HTML as _HTML
+                from IPython.display import display
+                HTML_cls = _HTML
+                live_handle = display(_HTML("<div>Starting install...</div>"), display_id=True)
+                live_rendering = True
+                _install_start_time = _time.monotonic()
+                _update_live(status_label='installing')
+        except Exception:
+            live_handle = None
+            HTML_cls = None
+            live_rendering = False
+
+        # Setup log capture
+        current_status = {'label': 'installing', 'entry': None}  # Track current status
+
+        def on_emit():
+            nonlocal _last_update_time
+            # Only update if still in installing state
+            if current_status['label'] == 'installing':
+                # Debounce: update at most every 2s to keep progress bar smooth
+                now = _time.monotonic()
+                if now - _last_update_time < 2.0:
+                    return
+                _last_update_time = now
+                _update_live(status_label='installing', entry=None)
+        
+        # Capture logs from fabric-cicd and msfabric_solution_catalog
+        target_loggers = [
+            logging.getLogger('fabric_cicd'),
+            logging.getLogger('msfabric_solution_catalog'),
+            logging.getLogger(__name__),
+        ]
+        
+        with log_capture_context(log_buffer, target_loggers, on_emit=on_emit, debug=installer.debug_logs):
+            try:
+                # Phase 1: Validate and prepare
+                installer.validate()
+                installer.prepare_workspace()
+                installer.initialize_workspace_manager()
+                
+                # Phase 2: Check for conflicts
+                planned_items_base, existing_items, conflicts, had_conflicts = installer.check_conflicts()
+                
+                # Phase 3: Resolve conflicts
+                resolved_prefix, remaining_conflicts = installer.resolve_conflicts(
+                    planned_items_base,
+                    existing_items,
+                    conflicts
+                )
+                
+                # If conflicts remain unresolved, render UI and fail
+                if remaining_conflicts:
+                    conflict_already_rendered = True
+                    conflict_html = ConflictUI.render_conflict_html(
+                        remaining_conflicts,
+                        instance_name,
+                        logical_id,
+                        installer.workspace_id
+                    )
+                    
+                    if unattended:
+                        raise RuntimeError(f"Conflicting items detected: {', '.join(remaining_conflicts)}")
+                    
+                    # Update live display with conflict UI
+                    current_status['label'] = 'conflict'  # Prevent on_emit from overwriting
+                    _update_live(
+                        status_label='conflict',
+                        entry=config.get('entry_point'),
+                        err=None,
+                        extra_html=conflict_html
+                    )
+                    
+                    # Raise error to mark cell as failed
+                    raise RuntimeError(f"Conflicting items detected: {', '.join(remaining_conflicts)}")
+                
+                # Phase 4: Apply prefix to files
+                installer.apply_prefix_to_files(resolved_prefix)
+                
+                # Phase 5: Deploy
+                logger.info(f"Deploying items from {installer.temp_workspace_path} to workspace '{installer.workspace_id}'")
+                target_ws = installer.deploy()
+                logger.info(f"Successfully installed '{logical_id}'")
+                
+                # Phase 6: Upload files to lakehouse (if configured)
+                installer.upload_files(target_ws, resolved_prefix)
+
+                # Phase 7: Generate entry URL
+                entry_url = installer.generate_entry_url(target_ws, resolved_prefix)
+
+                # Telemetry: record successful install
+                install_mode = "update" if had_conflicts and installer.update_existing else "new"
+
+                track_install(
+                    catalog_id=logical_id,
+                    catalog_numeric_id=config.get("id", 0),
+                    catalog_type=config.get("type", ""),
+                    status="success",
+                    duration_seconds=round(_time.monotonic() - _telemetry_start_time, 1),
+                    install_mode=install_mode,
+                    non_registered_install=non_registered_install,
+                )
+                
+                # Render success — animate progress bar to 100% first
+                current_status['label'] = 'success'  # Prevent on_emit from overwriting
+
+                # Smooth fill: run ~2.5s of rapid updates to animate bar to 100%
+                if live_handle and HTML_cls is not None:
+                    import time as _t
+                    fill_start = _t.monotonic()
+                    fill_duration = 2.5
+                    while True:
+                        elapsed_fill = _t.monotonic() - fill_start
+                        if elapsed_fill >= fill_duration:
+                            break
+                        # Lerp from current progress to 100%
+                        base_elapsed = _t.monotonic() - _install_start_time
+                        html = render_install_status_html(
+                            status='installing',
+                            catalog_name=config.get('name', logical_id),
+                            type=config.get('type', '').lower(),
+                            workspace_id=installer.workspace_id,
+                            entry_point=None,
+                            minutes_complete=config.get('minutes_to_complete_catalog'),
+                            minutes_deploy=config.get('minutes_to_deploy'),
+                            docs_uri=installer.effective_docs_uri,
+                            logs=log_buffer,
+                            elapsed_seconds=base_elapsed,
+                            progress_override=min(95 + (elapsed_fill / fill_duration) * 5, 100),
+                        )
+                        try:
+                            live_handle.update(HTML_cls(html))
+                        except Exception:
+                            pass
+                        _t.sleep(0.3)
+
+                status_html = render_install_status_html(
+                    status='success',
+                    catalog_name=config.get('name', logical_id),
+                    type=config.get('type', '').lower(),
+                    workspace_id=installer.workspace_id,
+                    entry_point=entry_url,
+                    minutes_complete=config.get('minutes_to_complete_catalog'),
+                    minutes_deploy=config.get('minutes_to_deploy'),
+                    docs_uri=installer.effective_docs_uri,
+                    logs=log_buffer,
+                )
+                
+                _update_live(status_label='success', entry=entry_url)
+                
+                if unattended:
+                    print(f"Installed '{logical_id}' to workspace '{installer.workspace_id}'")
+                    return None
+                
+                if live_rendering:
+                    return None
+                
+                try:
+                    from IPython.display import HTML
+                    return HTML(status_html)
+                except Exception:
+                    return status_html
+                    
+            except Exception as e:
+                # Skip telemetry for conflict-aborted installs (never reached deploy)
+                if not conflict_already_rendered:
+                    fail_install_mode = "update" if installer.had_conflicts and installer.update_existing else "new"
+
+                    track_install(
+                        catalog_id=logical_id,
+                        catalog_numeric_id=config.get("id", 0),
+                        catalog_type=config.get("type", ""),
+                        status="failure",
+                        duration_seconds=round(_time.monotonic() - _telemetry_start_time, 1),
+                        install_mode=fail_install_mode,
+                        non_registered_install=non_registered_install,
+                    )
+                logger.exception(f"Failed to install catalog '{logical_id}'")
+                error_text = str(e).strip() or e.__class__.__name__
+                
+                # Don't update_existing conflict UI if it's already been rendered
+                if conflict_already_rendered:
+                    raise RuntimeError(error_text)
+                
+                try:
+                    for line in traceback.format_exception(e):
+                        clean_line = line.rstrip("\n")
+                        if clean_line:
+                            log_buffer.append({"level": "ERROR", "message": clean_line})
+                    _update_live(
+                        status_label='error',
+                        entry=config.get('entry_point'),
+                        err=error_text
+                    )
+                except Exception:
+                    pass
+                
+                if unattended:
+                    print(f"Failed to install '{logical_id}': {error_text}")
+                    raise
+                
+                status_html = render_install_status_html(
+                    status='error',
+                    catalog_name=config.get('name', logical_id),
+                    type=config.get('type', '').lower(),
+                    workspace_id=installer.workspace_id,
+                    entry_point=config.get('entry_point'),
+                    minutes_complete=config.get('minutes_to_complete_catalog'),
+                    minutes_deploy=config.get('minutes_to_deploy'),
+                    docs_uri=installer.effective_docs_uri,
+                    logs=log_buffer,
+                    error_message=error_text,
+                )
+                _update_live(status_label='error', entry=config.get('entry_point'), err=error_text)
+                
+                if live_rendering:
+                    raise RuntimeError(error_text)
+                
+                try:
+                    from IPython.display import HTML, display
+                    display(HTML(status_html))
+                except Exception:
+                    pass
+                
+                raise RuntimeError(error_text)
+
+    def _install_from_github(
+        self,
+        logical_id: str,
+        repo_url: str,
+        repo_ref: str,
+        entry_point: str,
+        items_in_scope: List[str],
+        workspace_path: Optional[str] = None,
+        name: str = '',
+        files_source_path: Optional[str] = None,
+        files_destination_lakehouse: Optional[str] = None,
+        files_destination_path: str = '',
+        workspace_id: Optional[str] = None,
+        **kwargs,
+    ):
+        """
+        Install a catalog directly from a GitHub source without registry registration.
+
+        Use this method to test a catalog before it has been officially added to the
+        registry. All required source fields are provided as arguments.
+
+        By convention, Fabric workspace items live in a sub-folder of the repo whose name
+        matches ``logical_id``.  ``workspace_path`` defaults to ``"{logical_id}/"`` so
+        that parameter can usually be omitted.
+
+        Args:
+            logical_id: Kebab-case identifier for this catalog (e.g. "my-catalog").
+                        Used as the default workspace sub-folder name and as the item
+                        prefix key.
+            repo_url: Public GitHub repository URL.
+            repo_ref: Specific tag or commit SHA (not a branch).
+            entry_point: First item a user should open (e.g. "GettingStarted.Notebook").
+            items_in_scope: List of Fabric item type names included in this catalog.
+            workspace_path: Path within the repo containing the Fabric workspace items.
+                            Defaults to ``"{logical_id}/"`` when not provided.
+            name: Human-readable display name (optional; defaults to ``logical_id``).
+            files_source_path: Path within the repo to a folder of binary/data files to
+                                upload to the destination Lakehouse after deployment.
+                                Omit when no binary data upload is needed.
+            files_destination_lakehouse: Name of the Lakehouse item that receives the
+                                         uploaded files.  Required when
+                                         ``files_source_path`` is provided.
+            files_destination_path: Destination path inside the Lakehouse Files section.
+                                    Defaults to the root (``""``).
+            workspace_id: Target Fabric workspace GUID (optional; auto-detected inside
+                          a Fabric runtime).
+            **kwargs: Additional options forwarded to the installer
+                (unattended, item_prefix, update_existing, auto_prefix_on_conflict,
+                debug, repo_ref override, etc.).
+        """
+        effective_workspace_path = workspace_path if workspace_path is not None else f"{logical_id}/"
+
+        source_config: dict = {
+            'repo_url': repo_url,
+            'repo_ref': repo_ref,
+            'workspace_path': effective_workspace_path,
+        }
+        if files_source_path and files_destination_lakehouse:
+            source_config['files_source_path'] = files_source_path
+            source_config['files_destination_lakehouse'] = files_destination_lakehouse
+            source_config['files_destination_path'] = files_destination_path
+
+        synthetic_config = {
+            'id': 0,
+            'logical_id': logical_id,
+            'name': name or logical_id,
+            'description': '',
+            'date_added': '01/01/2025',
+            'workload_tags': [],
+            'scenario_tags': [],
+            'type': 'Tutorial',
+            'source': source_config,
+            'items_in_scope': items_in_scope,
+            'catalog_docs_uri': '',
+            'entry_point': entry_point,
+            'owner_email': '',
+            'minutes_to_deploy': 0,
+            'minutes_to_complete_catalog': 0,
+        }
+
+        return self._install_with_config(synthetic_config, workspace_id, non_registered_install=True, **kwargs)
+
+
+

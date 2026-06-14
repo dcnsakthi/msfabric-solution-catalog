@@ -1,0 +1,30 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: "🔄 Checkout"
+        uses: actions/checkout@v4
+
+      - name: "⚙️ Bootstrap CI Environment"
+        run: contrib/bootstrap-ci.sh
+
+      - name: "🚀 Deploy Projects"
+        env:
+          WEBSITE_STORAGE_CONN_STRING: ${{ secrets.WEBSITE_STORAGE_CONN_STRING }}
+          APPINSIGHTS_APP_ID: ${{ secrets.APPINSIGHTS_APP_ID }}
+          APPINSIGHTS_API_KEY: ${{ secrets.APPINSIGHTS_API_KEY }}
+        run: npx nx run-many -t deploy --parallel=3 --output-style=stream

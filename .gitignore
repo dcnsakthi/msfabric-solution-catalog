@@ -1,0 +1,35 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Logs
+/**/fabric_cicd.error.log
+
+# Node
+node_modules/
+
+# Nx
+.nx/
+
+# Next.js generated
+src/msfabric_solution_catalog_web/out/
+src/msfabric_solution_catalog_web/.next/
+src/msfabric_solution_catalog_web/docs/
+src/msfabric_solution_catalog_web/src/data/side-menu.json
+src/msfabric_solution_catalog_web/src/data/scenarios.json
+src/msfabric_solution_catalog_web/public/images/tags/workload/
+src/msfabric_solution_catalog_web/public/images/diagrams/
+src/msfabric_solution_catalog_web/src/data/fabric-item-icons.json
+
+# Scratch
+.temp/
+.tmp-diagrams/
+TODO.md
+

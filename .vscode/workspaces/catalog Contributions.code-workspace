@@ -1,0 +1,14 @@
+{
+  "folders": [
+    {
+      "name": "msfabric_solution_catalog",
+      "path": "../../src/msfabric_solution_catalog"
+    }
+  ],
+  "settings": {
+    "git.repositoryScanPaths": ["../.."],
+    "python.defaultInterpreterPath": "${workspaceFolder: msfabric_solution_catalog}/.venv/bin/python",
+    "editor.formatOnSave": false
+  }
+}
+

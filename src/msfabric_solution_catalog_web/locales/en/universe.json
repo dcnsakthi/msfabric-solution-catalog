@@ -1,0 +1,15 @@
+{
+  "explore": {
+    "label": "Explore",
+    "title": "Featured catalogs",
+    "cards": {
+      "scenarios": {
+        "title": "catalog",
+        "subtitle": "Scenarios",
+        "footerText": "Browse scenarios",
+        "desc": "Want to explore multiple Fabric features working together seamlessly to solve real-world problems? Get started with zero-to-hero scenarios that showcases the full power of catalog."
+      }
+    }
+  }
+}
+

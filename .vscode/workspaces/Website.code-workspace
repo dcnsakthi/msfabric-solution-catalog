@@ -1,0 +1,13 @@
+{
+  "folders": [
+    {
+      "name": "msfabric_solution_catalog_web",
+      "path": "../../src/msfabric_solution_catalog_web"
+    }
+  ],
+  "settings": {
+    "git.repositoryScanPaths": ["../.."],
+    "editor.formatOnSave": true
+  }
+}
+
