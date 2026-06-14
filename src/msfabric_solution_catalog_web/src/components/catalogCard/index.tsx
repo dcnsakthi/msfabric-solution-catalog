@@ -266,7 +266,7 @@ function CardHeader({
               }}
             >
               <Image
-                src={item.color.icon}
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH ?? ''}${item.color.icon}`}
                 alt={item.tag}
                 width={28}
                 height={28}
