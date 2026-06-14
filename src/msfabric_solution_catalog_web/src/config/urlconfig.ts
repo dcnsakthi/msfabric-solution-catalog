@@ -14,7 +14,7 @@ export const EXTERNAL_URL = {
   GITHUB_REPO: 'https://github.com/dcnsakthi/msfabric-solution-catalog',
   PYPI: 'https://pypi.org/project/msfabric-solution-catalog/',
   MICROSOFT: 'https://www.microsoft.com/en-us/microsoft-fabric/',
-  CATALOG: 'https://dcnsakthi.github.io/msfabric-solution-catalog/',
+  CATALOG: 'https://dcnsakthi.github.io/msfabric-solution-catalog/catalog',
 };
 
 export const DOC_PATH = {
