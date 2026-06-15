@@ -10,7 +10,7 @@ description = "Get started quickly with pre-built solutions, tutorials, demos, a
 readme = "README.md"
 requires-python = ">=3.10,<3.14"
 license = "MIT"
-urls.Repository = "https://github.com/microsoft/msfabric-solution-catalog.git"
+urls.Repository = "https://github.com/dcnsakthi/msfabric-solution-catalog.git"
 classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3.10",
