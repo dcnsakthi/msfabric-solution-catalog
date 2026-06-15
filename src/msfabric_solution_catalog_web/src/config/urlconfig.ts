@@ -2,7 +2,7 @@ export const INTERNAL_ROUTE = {
   OVERVIEW: '/',
   SCENARIOS: '/catalog',
   GETTING_STARTED: '/getting-started',
-  COMMUNITY: 'https://github.com/microsoft/msfabric-solution-catalog/discussions',
+  COMMUNITY: 'https://github.com/dcnsakthi/msfabric-solution-catalog/discussions',
   MISSION: '/',
 };
 

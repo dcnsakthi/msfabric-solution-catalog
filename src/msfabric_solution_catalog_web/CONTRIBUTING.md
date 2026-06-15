@@ -33,7 +33,7 @@ Thank you for helping improve Fabric catalog!
    read -p "Enter your github email (e.g. 'your-github-alias@blah.com'): " user_email
    read -p "Enter the branch to switch to: (e.g. 'main') " branch_name
     
-   git clone https://github.com/microsoft/msfabric-solution-catalog.git
+   git clone https://github.com/dcnsakthi/msfabric-solution-catalog.git
    
    git config --global user.name "$user_name"
    git config --global user.email "$user_email"

@@ -257,7 +257,7 @@ export default function DiagramGenerator() {
       }}>
         Paste Mermaid syntax below to preview and download light/dark SVGs for your catalog.
         See the <a
-          href="https://github.com/microsoft/msfabric-solution-catalog/blob/main/src/msfabric_solution_catalog/CONTRIBUTING.md#mermaid-diagrams"
+          href="https://github.com/dcnsakthi/msfabric-solution-catalog/blob/main/src/msfabric_solution_catalog/CONTRIBUTING.md#mermaid-diagrams"
           style={{ color: tokens.colorBrandForeground1 }}
           target="_blank"
           rel="noopener noreferrer"

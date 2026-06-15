@@ -28,7 +28,7 @@ _If you do not have an existing workspace:_
 > - **Custom prefix** — set your own prefix, e.g. `catalog.install("demo", item_prefix="demo_")`
 > - **Upgrade** — overwrite existing items with conflicting names
 >
-> See [Handling Name Conflicts](https://github.com/microsoft/msfabric-solution-catalog/tree/main/src/msfabric_solution_catalog#handling-name-conflicts) for more details.
+> See [Handling Name Conflicts](https://github.com/dcnsakthi/msfabric-solution-catalog/tree/main/src/msfabric_solution_catalog#handling-name-conflicts) for more details.
 
 ## Step 2: Create a Notebook
 
