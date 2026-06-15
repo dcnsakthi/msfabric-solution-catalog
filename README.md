@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/dcnsakthi/msfabric-solution-catalog/raw/main/src/msfabric_solution_catalog_web/public/dark-logo-right.svg" alt="Solution catalog logo" width="720">
+  <img src="https://github.com/dcnsakthi/msfabric-solution-catalog/raw/main/src/msfabric_solution_catalog_web/public/MSFabricSolutionCatalog.svg" alt="Solution catalog logo" width="720">
   <p align="center">
     Ready-to-run accelerators, demos, and tutorials for <a href="https://www.microsoft.com/en-us/microsoft-fabric">Microsoft Fabric</a> — automated, high-quality, and open-source.
     <br />
