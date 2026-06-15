@@ -1,5 +1,11 @@
 name: Deploy
 
+# DEPRECATED: This is a legacy Azure deployment pipeline.
+# The primary deployment is now via deploy-pages.yml (GitHub Pages).
+# This workflow is kept for manual dispatch only (workflow_dispatch).
+# It requires Azure secrets (WEBSITE_STORAGE_CONN_STRING, APPINSIGHTS_APP_ID, APPINSIGHTS_API_KEY)
+# that are not configured for this fork.
+
 on:
   workflow_dispatch:
 
