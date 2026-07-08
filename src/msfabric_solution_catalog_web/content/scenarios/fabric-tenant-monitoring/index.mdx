@@ -49,24 +49,24 @@ The objective is to track tenant setting changes over time for governance and au
 
 ## Artifacts
 
-### 1) Notebook: `nb_ftsm_tenant_settings.Notebook`
+### Notebook: `nb_ftsm_tenant_settings.Notebook`
 
 - Main code file: `notebook-content.py`
 - Includes schedule configuration: `.schedules`
 - Used to extract and prepare tenant settings snapshot data
 
-### 2) Lakehouse: `FTSMonitorLH.Lakehouse`
+### Lakehouse: `FTSMonitorLH.Lakehouse`
 
 - `lakehouse.metadata.json` defines core Lakehouse metadata
 - `shortcuts.metadata.json` contains shortcut metadata (currently minimal)
 - `alm.settings.json` provides deployment/environment binding settings for ALM flows
 
-### 3) Semantic Model: `FTSMonitorSM.SemanticModel`
+### Semantic Model: `FTSMonitorSM.SemanticModel`
 
 - `definition.pbism` + `definition/` store model definitions
 - Exposes modeled data for report consumption
 
-### 4) Report: `FTSMonitorRPT.Report`
+### Report: `FTSMonitorRPT.Report`
 
 - `definition.pbir` + `definition/` store report definitions
 - `StaticResources/` includes report static assets/resources

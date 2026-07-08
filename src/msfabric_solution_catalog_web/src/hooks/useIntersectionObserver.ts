@@ -22,7 +22,10 @@ export default function useIntersectionObserver(
   const scan = useCallback(() => {
     let active: string | null = null;
     for (const selector of items) {
-      const el = document.querySelector(selector);
+      // Use getElementById to avoid SyntaxError on IDs that start with a digit
+      // (CSS selectors like #1-foo are invalid, but getElementById('1-foo') is safe)
+      const id = selector.startsWith('#') ? selector.slice(1) : selector;
+      const el = document.getElementById(id);
       if (el) {
         const top = el.getBoundingClientRect().top;
         if (top <= offset) {
