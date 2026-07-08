@@ -1,8 +1,8 @@
 id: 26
 logical_id: fabric-tenant-monitoring
-name: Fabric Tenant Monitoring
+name: Fabric Tenant Setting Monitoring
 description: >-
-  A scheduled notebook extracts Fabric tenant monitoring data from the Fabric Admin REST APIs and stores it in a Lakehouse in a semi-structured format, enabling comprehensive monitoring and reporting through Power BI.
+  A scheduled notebook extracts Fabric tenant setting data from the Fabric Admin REST APIs and stores it in a Lakehouse in a semi-structured format, enabling comprehensive monitoring and reporting through Power BI.
 date_added: 06/16/2026
 workload_tags:
 - Power BI
@@ -22,7 +22,7 @@ items_in_scope:
 catalog_docs_uri: ''
 entry_point: nb_ftsm_tenant_settings.Notebook
 test_suite: ''
-owner_email: dcnsakthi@live.com
+owner_email: ftsm@microsoft.com
 minutes_to_deploy: 2
 minutes_to_complete_catalog: 5
 video_url: ""
