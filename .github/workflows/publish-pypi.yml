@@ -39,6 +39,7 @@ jobs:
   publish:
     name: Publish to PyPI
     needs: build
+    if: ${{ github.ref_type == 'tag' }}
     runs-on: ubuntu-latest
     environment:
       name: pypi
