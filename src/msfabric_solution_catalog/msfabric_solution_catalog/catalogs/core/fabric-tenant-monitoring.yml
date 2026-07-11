@@ -24,7 +24,7 @@ entry_point: nb_ftsm_tenant_settings.Notebook
 test_suite: ''
 owner_email: ftsm@microsoft.com
 minutes_to_deploy: 2
-minutes_to_complete_catalog: 5
+minutes_to_complete_catalog: 4
 video_url: ""
 difficulty: Beginner
 last_updated: "2026-07-07"
